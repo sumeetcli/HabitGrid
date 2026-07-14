@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 from functools import wraps
 from flask_session import Session
+import datetime
 
 # session from flask for user side session
 # Session from flask_session for server side session
@@ -11,6 +12,8 @@ app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
+life_expectancy = 73
 
 def login_required(f):
     @wraps(f)
@@ -28,7 +31,53 @@ def get_db():
 @app.route("/")
 @login_required
 def home():
-    return "HabitGrid"
+    db = get_db()
+    tableRow = db.execute("select dob from settings where user_id = ?", (session["user_id"],)).fetchone()
+
+    if not tableRow:
+        db.close()
+        return render_template("home.html", has_dob=False)
+
+    dobData = tableRow["dob"]
+
+    if dobData == None:
+        db.close()
+        return render_template("home.html", has_dob=False)
+    
+    year, month, day = dobData.split("-")
+    dob = datetime.date(int(year), int(month), int(day))
+
+    days_lived = (datetime.date.today() - dob).days
+    total = life_expectancy * 365
+    weeks = days_lived // 7
+    total_weeks = total // 7
+
+    db.close()
+
+    return render_template("home.html", has_dob=True, days_lived=days_lived, total=total, weeks = weeks, total_weeks = total_weeks, life_expectancy=life_expectancy)
+
+@app.route("/habits", methods=["GET", "POST"])
+@login_required
+def habits():
+    db = get_db()
+
+    if request.method == "POST":
+        name = request.form.get("name")
+
+        if name == None:
+            flash("Habit name cannot be empty")
+            db.close()
+            return redirect("/habits")
+
+        db.execute("insert into habits (user_id, name) values (?, ?)", (session["user_id"], name))
+        db.commit()
+        db.close()
+        return redirect("/habits")
+
+    habitsList = db.execute("select * from habits where user_id = ?", (session["user_id"],)).fetchall()
+    db.close()
+
+    return render_template("habits.html", habits=habitsList)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -60,7 +109,12 @@ def register():
         db.close()
         return redirect("/register")
 
-    db.execute("insert into users (username, hash) values (?,?)", (username, generate_password_hash(password)))
+    db.execute("insert into users (username, hash) values (?, ?)", (username, generate_password_hash(password)))
+
+    user_id = db.execute("select id from users where username = ?", (username,)).fetchone()["id"]
+
+    db.execute("insert into settings (user_id) values (?)", (user_id,))
+
     db.commit()
     db.close()
 
@@ -93,6 +147,20 @@ def login():
 
     session["user_id"] = tableRow["id"]
     return redirect("/")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/login")
+
+@app.route("/set_dob", methods = ["POST"])
+def set_dob():
+    dob = request.form.get("dob")
+    db = get_db()
+    db.execute("update settings set dob = ? where user_id = ?", (dob, session["user_id"]))
+    db.commit()
+    db.close()
+    return redirect("/")                                                                   
 
 if __name__ == "__main__":
     app.run(debug=True)

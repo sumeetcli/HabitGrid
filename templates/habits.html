@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<title>HabitGrid | Habits</title>
+{% endblock %}
+
+{% block body %}
+<form action="/habits" method="post">
+    <input type="text" name="name" placeholder="Habit name">
+    <button type="submit">Add</button>
+</form>
+
+<ul>
+    {% for habit in habits %}
+        <li>{{ habit.name }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}
