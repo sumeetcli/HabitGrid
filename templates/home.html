@@ -5,37 +5,5 @@
 {% endblock %}
 
 {% block body %}
-{% if has_dob %}
-<p align="center">Days lived: {{ days_lived }} ({{ days_lived // 365 }} years)</p>
-<p align="center">Days remaining: {{ total - days_lived }} ({{ (total - days_lived) // 365 }}) years</p>
-<p align="center">Percent of life lived: {{ (days_lived / total * 100) | round(1) }}%</p>
-<p align="center">Average life expectancy: {{ life_expectancy }} years</p>
 
-<div class="grid">
-    {% for i in range(total_weeks) %}
-    <!--class either lived/remaining, for css selectors -->
-        <div class="cell {% if i < weeks %} lived {% else %} remaining {% endif %}"></div>
-    {% endfor %}
-</div>
-
-<div class="legend">
-    <div class="legend-item">
-        <div class="legend-box lived"></div>
-        <span>Lived</span>
-    </div>
-    <div class="legend-item">
-        <div class="legend-box remaining"></div>
-        <span>Remaining</span>
-    </div>
-</div>
-
-<p align="center">Assumption: an average person spends about 55% of their life sleeping and doing necessary daily tasks (roughly 8 hours sleep + 5 hours of chores, meals, commuting, etc. per day)</p>
-{% else %}
-<form action="/set_dob" method="post">
-    <input type="date" name="dob">
-    <button type="submit">
-        Submit
-    </button>
-</form>
-{% endif %}
 {% endblock %}

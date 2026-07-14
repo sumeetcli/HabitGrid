@@ -10,10 +10,8 @@
 </head>
 <body>
     <nav>
-        {% if session.id %}
+        {% if session.user_id %}
             <a href="/">Home</a>
-            <a href="/analytics">Analytics</a>
-            <a href="/settings">Settings</a>
             <a href="/logout">Logout</a>
         {% else %}
             <a href="/register">Register</a>

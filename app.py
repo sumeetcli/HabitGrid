@@ -4,8 +4,9 @@ import sqlite3
 from functools import wraps
 from flask_session import Session
 import datetime
+from helpers import login_required, get_db
 
-# session from flask for user side session
+# session ->  user side session
 # Session from flask_session for server side session
 
 app = Flask(__name__)
@@ -13,71 +14,13 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-life_expectancy = 73
-
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if "user_id" not in session:
-            return redirect("/login")
-        return f(*args, **kwargs)
-    return decorated_function
-
-def get_db():
-    db = sqlite3.connect("habits.db")
-    db.row_factory = sqlite3.Row # imp: dictionary outputs, easier to access than tuple
-    return db
-
 @app.route("/")
 @login_required
 def home():
     db = get_db()
-    tableRow = db.execute("select dob from settings where user_id = ?", (session["user_id"],)).fetchone()
-
-    if not tableRow:
-        db.close()
-        return render_template("home.html", has_dob=False)
-
-    dobData = tableRow["dob"]
-
-    if dobData == None:
-        db.close()
-        return render_template("home.html", has_dob=False)
-    
-    year, month, day = dobData.split("-")
-    dob = datetime.date(int(year), int(month), int(day))
-
-    days_lived = (datetime.date.today() - dob).days
-    total = life_expectancy * 365
-    weeks = days_lived // 7
-    total_weeks = total // 7
-
+    habits = db.execute("select * from habits where user_id = ?", (session["user_id"],)).fetchall()
     db.close()
-
-    return render_template("home.html", has_dob=True, days_lived=days_lived, total=total, weeks = weeks, total_weeks = total_weeks, life_expectancy=life_expectancy)
-
-@app.route("/habits", methods=["GET", "POST"])
-@login_required
-def habits():
-    db = get_db()
-
-    if request.method == "POST":
-        name = request.form.get("name")
-
-        if name == None:
-            flash("Habit name cannot be empty")
-            db.close()
-            return redirect("/habits")
-
-        db.execute("insert into habits (user_id, name) values (?, ?)", (session["user_id"], name))
-        db.commit()
-        db.close()
-        return redirect("/habits")
-
-    habitsList = db.execute("select * from habits where user_id = ?", (session["user_id"],)).fetchall()
-    db.close()
-
-    return render_template("habits.html", habits=habitsList)
+    return render_template("home.html", habits=habits)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -92,10 +35,10 @@ def register():
     if not username or not password:
         flash("Username or password cannot be empty")
         return redirect("/register")
-    elif not confirmation:
+    if not confirmation:
         flash("You must confirm your password")
         return redirect("/register")
-    elif password != confirmation:
+    if password != confirmation:
         flash("Password must match confirm password")
         return redirect("/register")
 
@@ -110,10 +53,6 @@ def register():
         return redirect("/register")
 
     db.execute("insert into users (username, hash) values (?, ?)", (username, generate_password_hash(password)))
-
-    user_id = db.execute("select id from users where username = ?", (username,)).fetchone()["id"]
-
-    db.execute("insert into settings (user_id) values (?)", (user_id,))
 
     db.commit()
     db.close()
@@ -152,15 +91,6 @@ def login():
 def logout():
     session.clear()
     return redirect("/login")
-
-@app.route("/set_dob", methods = ["POST"])
-def set_dob():
-    dob = request.form.get("dob")
-    db = get_db()
-    db.execute("update settings set dob = ? where user_id = ?", (dob, session["user_id"]))
-    db.commit()
-    db.close()
-    return redirect("/")                                                                   
 
 if __name__ == "__main__":
     app.run(debug=True)
