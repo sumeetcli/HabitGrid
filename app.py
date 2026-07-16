@@ -4,7 +4,7 @@ import sqlite3
 from functools import wraps
 from flask_session import Session
 import datetime
-from helpers import login_required, get_db
+from helpers import login_required, get_db, generate_heatmap
 
 # session ->  user side session
 # Session from flask_session for server side session
@@ -18,14 +18,22 @@ Session(app)
 @login_required
 def home():
     db = get_db()
-    habits = db.execute("select * from habits where user_id = ?", (session["user_id"],)).fetchall() # list of tuples
+    habits = db.execute("select * from habits where user_id = ?", (session["user_id"],)).fetchall()
+    
+    habits_list = []
+    for habit in habits:
+        habit_dict = dict(habit)
+        habit_dict['heatmap'] = generate_heatmap(habit['id'])
+        habits_list.append(habit_dict)
+    
     db.close()
-    return render_template("home.html", habits=habits)
+    return render_template("home.html", habits=habits_list)
 
-@app.route("/habit/add")
+@app.route("/habit/add", methods=["POST"])
 @login_required
 def add_habit():
     name = request.form.get("name")
+    #print(name)
     if name == None:
         flash("Habit name cannot be empty")
         return redirect("/")
@@ -38,6 +46,30 @@ def add_habit():
     
     return redirect("/")
 
+@app.route("/habit/delete/<int:habit_id>", methods=["POST"])
+@login_required
+def delete_habit(habit_id):
+    db = get_db()
+    db.execute("delete from habits where id = ?", (habit_id,))
+    db.commit()
+    db.close()
+    
+    return redirect("/")
+
+@app.route("/log", methods=["POST"])
+@login_required
+def log_habit():
+    data = request.get_json()
+    dateString = data.get("date")
+    habitId = data.get("habitId")
+    
+    #print(data)
+    #print(dateString)
+
+    db = get_db()
+    db.execute("insert into habit_logs (habit_id, date, done) values (?, ?, ?)", (habitId,dateString, 1))
+    db.commit()
+    db.close()
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

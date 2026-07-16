@@ -8,22 +8,33 @@
 
 <div class="overall">
 
-    {% if habits != None %}
-            {% for h in habits %}
-                <div class="habit-card">
-                    <h2>{{ habit['name']}}</h2>
-                    <div class="heatmap">
-    
-                    </div>
+    {% if habits %}
+        {% for h in habits %}
+            <div class="habit-card">
+                <h2>{{ h['name'] }}</h2>
+                <form action="/habit/delete/{{ h['id'] }}" method="post">
+                    <button type="submit">Delete</button>
+                </form>
+                <div class="heatmap">
+                    {% for week in h['heatmap'] %}
+                        <div class="week">
+                            {% for day in week %}
+                                <div class="day" date="{{ day['date'] }}" habit-id="{{h['id']}}">{{ day['date'][-2:] }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
+            </div>
+        {% endfor %}
     {% else %}
-    <p>No habits yet, please add habits to continue</p>
-{% endif %}
+        <p>No habits yet, please add habits to continue</p>
+    {% endif %}
+
 </div>
 
 <form action="/habit/add" method="post">
-    <input type="text" name="Name" placeholder="Add habit" required autofocus>
+    <input type="text" name="name" placeholder="Add habit" required autofocus>
     <button type="submit">Add</button>
 </form>
+
 {% endblock %}

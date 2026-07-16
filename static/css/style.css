@@ -1,0 +1,143 @@
+body {
+    background-color: #ffffff;
+    color: #000000;
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+body.dark {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+nav {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-left {
+    display: flex;
+    gap: 20px;
+}
+
+nav a {
+    padding: 10px 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+nav button {
+    padding: 10px 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+body.dark nav a {
+    color: #e0e0e0;
+}
+
+body.dark nav button {
+    color: #e0e0e0;
+}
+
+#theme-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+button {
+    background-color: #f0f0f0;
+    color: #000000;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+body.dark button {
+    background-color: #333333;
+    color: #e0e0e0;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+.day {
+    width: 20px;
+    height: 20px;
+    background-color: #ebedf0;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.dark .day {
+    background-color: #2a2a2a;
+}
+
+.day:hover {
+    opacity: 0.7;
+}
+
+.day.done {
+    background-color: #3d82f6;
+}
+
+body.dark .day.done {
+    background-color: #60a5fa;
+}
+
+.heatmap {
+    display: grid;
+    grid-template-columns: repeat(52, 1fr);
+    gap: 4px;
+    margin-top: 10px;
+}
+
+.week {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.overall {
+    max-width: 1200px;
+}
+
+.habit-card {
+    margin-bottom: 30px;
+}
+
+.habit-card h2 {
+    margin: 0 0 15px 0;
+    font-size: 18px;
+}
+
+form {
+    margin-top: 20px;
+}
+
+input {
+    padding: 10px;
+    font-size: 16px;
+}
+
+body.dark input {
+    background-color: #333333;
+    color: #e0e0e0;
+    border: 1px solid #555555;
+}

@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    {% block head %}
-
-    {% endblock %}
+    {% block head %}{% endblock %}
 </head>
 <body>
     <nav>
         {% if session.user_id %}
-            <a href="/">Home</a>
-            <a href="/logout">Logout</a>
+            <div class="nav-left">
+                <a href="/">Home</a>
+                <a href="/logout">Logout</a>
+            </div>
+            <button id="theme-btn">🌙</button>
         {% else %}
             <a href="/register">Register</a>
             <a href="/login">Login</a>
@@ -22,13 +23,13 @@
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
-                <p>{{ message }}</p>
+                <p class="flash">{{ message }}</p>
             {% endfor %}
         {% endif %}
     {% endwith %}
 
-    {% block body %}
+    {% block body %}{% endblock %}
 
-    {% endblock %}
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
