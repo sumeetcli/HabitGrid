@@ -6,4 +6,24 @@
 
 {% block body %}
 
+<div class="overall">
+
+    {% if habits != None %}
+            {% for h in habits %}
+                <div class="habit-card">
+                    <h2>{{ habit['name']}}</h2>
+                    <div class="heatmap">
+    
+                    </div>
+                </div>
+            {% endfor %}
+    {% else %}
+    <p>No habits yet, please add habits to continue</p>
+{% endif %}
+</div>
+
+<form action="/habit/add" method="post">
+    <input type="text" name="Name" placeholder="Add habit" required autofocus>
+    <button type="submit">Add</button>
+</form>
 {% endblock %}

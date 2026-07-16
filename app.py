@@ -18,9 +18,26 @@ Session(app)
 @login_required
 def home():
     db = get_db()
-    habits = db.execute("select * from habits where user_id = ?", (session["user_id"],)).fetchall()
+    habits = db.execute("select * from habits where user_id = ?", (session["user_id"],)).fetchall() # list of tuples
     db.close()
     return render_template("home.html", habits=habits)
+
+@app.route("/habit/add")
+@login_required
+def add_habit():
+    name = request.form.get("name")
+    if name == None:
+        flash("Habit name cannot be empty")
+        return redirect("/")
+    
+    db = get_db()
+    today = datetime.date.today().isoformat() # return string instead of object, "YYYY-MM-DD"
+    db.execute("insert into habits (user_id, name, created_at) values (?, ?, ?)", (session["user_id"], name,today))
+    db.commit()
+    db.close()
+    
+    return redirect("/")
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

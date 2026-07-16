@@ -7,7 +7,8 @@ create table users (
 create table habits (
     id integer primary key,
     user_id integer not null,
-    name text not null
+    name text not null,
+    created_at text not null
 );
 
 create table habit_logs (

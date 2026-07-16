@@ -14,3 +14,4 @@ def get_db():
     db = sqlite3.connect("habits.db")
     db.row_factory = sqlite3.Row
     return db
+
