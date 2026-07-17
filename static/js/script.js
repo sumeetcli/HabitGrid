@@ -21,12 +21,18 @@ themeButton.addEventListener("click", function() {
 });
 
 document.addEventListener("click", function(event) {
-    if (event.target.classList.contains("day")) {
+    if (event.target.classList.contains("day") && !event.target.classList.contains("future")) {
         const date = event.target.getAttribute("date");
         const habitId = event.target.getAttribute("habit-id");
         //console.log("Clicked date:", date);
 
         event.target.classList.toggle("done");
+
+        event.target.animate([
+            { transform: "scale(1)" },
+            { transform: "scale(1.2)" },
+            { transform: "scale(1)" }
+        ],{ duration: 200 });
         
         fetch("/log", {
             method: "POST",

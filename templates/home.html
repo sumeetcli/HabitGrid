@@ -12,20 +12,23 @@
         {% for h in habits %}
             <div class="habit-card">
                 <h2>{{ h['name'] }}</h2>
-                <form action="/habit/delete/{{ h['id'] }}" method="post">
-                    <button type="submit">Delete</button>
-                </form>
+                
                 <div class="heatmap">
                     {% for week in h['heatmap'] %}
                         <div class="week">
                             {% for day in week %}
-                                <div class="day" date="{{ day['date'] }}" habit-id="{{h['id']}}">{{ day['date'][-2:] }}</div>
+                                <!-- <div class="day {% if day['done'] == 1 %}done{% endif %} {% if day['today'] %}today{% endif %} {% if day['future'] %}future{% endif %}" date="{{ day['date'] }}" habit-id="{{h['id']}}">{{ day['date'][-2:] }}</div> -->
+                                <div class="day {% if day['done'] == 1 %}done{% endif %} {% if day['today'] %}today{% endif %} {% if day['future'] %}future{% endif %} month-{{ day['month'] }}" date="{{ day['date'] }}" habit-id="{{h['id']}}">{{ day['date'][-2:] }}</div>
                             {% endfor %}
                         </div>
                     {% endfor %}
                 </div>
+                <form action="/habit/delete/{{ h['id'] }}" method="post">
+                    <button type="submit">Delete</button>
+                </form>
             </div>
         {% endfor %}
+        
     {% else %}
         <p>No habits yet, please add habits to continue</p>
     {% endif %}
@@ -33,7 +36,7 @@
 </div>
 
 <form action="/habit/add" method="post">
-    <input type="text" name="name" placeholder="Add habit" required autofocus>
+    <input type="text" name="name" placeholder="Add habit" required>
     <button type="submit">Add</button>
 </form>
 

@@ -6,9 +6,6 @@ from flask_session import Session
 import datetime
 from helpers import login_required, get_db, generate_heatmap
 
-# session ->  user side session
-# Session from flask_session for server side session
-
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -40,7 +37,7 @@ def add_habit():
     
     db = get_db()
     today = datetime.date.today().isoformat() # return string instead of object, "YYYY-MM-DD"
-    db.execute("insert into habits (user_id, name, created_at) values (?, ?, ?)", (session["user_id"], name,today))
+    db.execute("insert into habits (user_id, name) values (?, ?)", (session["user_id"], name))
     db.commit()
     db.close()
     
@@ -67,9 +64,22 @@ def log_habit():
     #print(dateString)
 
     db = get_db()
-    db.execute("insert into habit_logs (habit_id, date, done) values (?, ?, ?)", (habitId,dateString, 1))
+
+    # check if already logged for this day
+    existing = db.execute("select id, done from habit_logs where habit_id = ? and date = ?", (habitId, dateString)).fetchone()
+    
+    if existing:
+        # toggle done value
+        new_done = 1 - existing["done"]
+        db.execute("update habit_logs set done = ? where habit_id = ? and date = ?", (new_done, habitId, dateString))
+    else:
+        # not exists so add new row
+        db.execute("insert into habit_logs (habit_id, date, done) values (?, ?, ?)", (habitId, dateString, 1))
+
     db.commit()
     db.close()
+
+    return "Logged"
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

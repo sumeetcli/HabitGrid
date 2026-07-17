@@ -17,17 +17,38 @@ def get_db():
     return db
 
 def generate_heatmap(habit_id):
+    db = get_db()
+    
     today = datetime.date.today()
     year_start = datetime.date(today.year, 1, 1)
+    today_str = today.isoformat()
+    
+    logs = db.execute("select date, done from habit_logs where habit_id = ?", (habit_id,)).fetchall()
+    db.close()
     
     heatmap = []
     week = []
     
     for i in range(365):
         date = year_start + datetime.timedelta(days=i)
-        week.append({"date": date.isoformat(), "done": 0})
+        dateString = date.isoformat()
+        month = date.month
         
-        # weekly
+        # setting the days that were already done
+        done = 0
+        for log in logs:
+            if log[0] == dateString:
+                done = log[1]
+        
+        is_today = dateString == today_str
+        is_future = dateString > today_str
+        
+        # week.append({"date": dateString, "done": done, "today": is_today})
+        #week.append({"date": dateString, "done": done, "today": is_today, "future": is_future})
+        #color = 
+        #week.append({"date": dateString, "done": done, "today": is_today, "future": is_future, "color": color})
+        week.append({"date": dateString, "done": done, "today": is_today, "future": is_future, "month": month})
+        
         if len(week) == 7:
             heatmap.append(week)
             week = []
