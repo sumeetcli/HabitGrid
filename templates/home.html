@@ -12,6 +12,8 @@
         {% for h in habits %}
             <div class="habit-card">
                 <h2>{{ h['name'] }}</h2>
+                <span style="font-size: 14px;">Current streak: {{ h['current_streak'] }}</span>
+                
                 
                 <div class="heatmap">
                     {% for week in h['heatmap'] %}
@@ -23,9 +25,16 @@
                         </div>
                     {% endfor %}
                 </div>
-                <form action="/habit/delete/{{ h['id'] }}" method="post">
-                    <button type="submit">Delete</button>
-                </form>
+                <div style="display: flex; gap: 10px;">
+                    <!-- one way to get two forms side by side -->
+                    <form action="/habit/delete/{{ h['id'] }}" method="post" style="display:inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                    <!-- clear progress -->
+                    <form action="/habit/clear/{{ h['id'] }}" method="post" style="display:inline;">
+                        <button type="submit">Clear</button>
+                    </form>
+                </div>
             </div>
         {% endfor %}
         

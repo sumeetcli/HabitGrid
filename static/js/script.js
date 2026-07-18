@@ -2,8 +2,12 @@ const themeButton = document.getElementById("theme-btn");
 const htmlBody = document.body;
 
 // check if dark mode was saved before
+
+// javascript local storage feature
+// escape from writing many SQL queries
 if (localStorage.getItem("isDarkMode") === "true") {
     htmlBody.classList.add("dark");
+    //console.log(localStorage.getItem("isDarkMode") != "false")
     themeButton.textContent = "☀️";
 }
 
@@ -14,7 +18,8 @@ themeButton.addEventListener("click", function() {
     if (htmlBody.classList.contains("dark")) {
         localStorage.setItem("isDarkMode", "true");
         themeButton.textContent = "☀️";
-    } else {
+    }
+    else {
         localStorage.setItem("isDarkMode", "false");
         themeButton.textContent = "🌙";
     }
@@ -35,8 +40,8 @@ document.addEventListener("click", function(event) {
         ],{ duration: 200 });
         
         fetch("/log", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
+            method:"POST",
+            headers: {"Content-Type":"application/json"},
             body: JSON.stringify({date: date, habitId: habitId})
         });
     }

@@ -1,10 +1,18 @@
 from flask import Flask, render_template, request, redirect, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
+# SQLite3 database module: https://docs.python.org/3/library/sqlite3.html
 import sqlite3
+# functools.wraps decorator: https://docs.python.org/3/library/functools.html#functools.wraps
 from functools import wraps
 from flask_session import Session
+# datetime for date handling: https://docs.python.org/3/library/datetime.html
 import datetime
-from helpers import login_required, get_db, generate_heatmap
+from helpers import login_required, get_db, generate_heatmap, get_streak
+
+# used the following sources for help:
+# 1. freecodecamp flask crash course
+# 2. kevin powell css youtube tutorials
+# 3. Coding2GO css youtube tutorials
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
@@ -15,16 +23,23 @@ Session(app)
 @login_required
 def home():
     db = get_db()
+
     habits = db.execute("select * from habits where user_id = ?", (session["user_id"],)).fetchall()
     
     habits_list = []
     for habit in habits:
         habit_dict = dict(habit)
         habit_dict['heatmap'] = generate_heatmap(habit['id'])
+        habit_dict['current_streak'] = get_streak(habit['id'])
         habits_list.append(habit_dict)
     
     db.close()
+
     return render_template("home.html", habits=habits_list)
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
 @app.route("/habit/add", methods=["POST"])
 @login_required
@@ -53,6 +68,16 @@ def delete_habit(habit_id):
     
     return redirect("/")
 
+@app.route("/habit/clear/<int:habit_id>", methods=["POST"])
+@login_required
+def clear_habit(habit_id):
+    db = get_db()
+    db.execute("delete from habit_logs where habit_id = ?", (habit_id,))
+    db.commit()
+    db.close()
+
+    return redirect("/")
+
 @app.route("/log", methods=["POST"])
 @login_required
 def log_habit():
@@ -62,6 +87,7 @@ def log_habit():
     
     #print(data)
     #print(dateString)
+    #print(habitId)
 
     db = get_db()
 
@@ -88,7 +114,7 @@ def register():
         return render_template("register.html")
 
     username = request.form.get("username")
-    password = request.form.get("password") # todo: make this more secure like username input
+    password = request.form.get("password") # todo: think of ways to make auth more secure
     confirmation = request.form.get("confirmation")
 
     if not username or not password:
@@ -149,7 +175,9 @@ def login():
 @app.route("/logout")
 def logout():
     session.clear()
+
     return redirect("/login")
 
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == "__main__": # so that any import of this python file doesnt start the server
+    #app.run(debug=True)
+    app.run(debug=False)

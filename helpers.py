@@ -14,6 +14,11 @@ def login_required(f):
 def get_db():
     db = sqlite3.connect("habits.db")
     db.row_factory = sqlite3.Row
+    
+    # initialize schema if needed
+    with open("schema.sql") as f:
+        db.executescript(f.read())
+    
     return db
 
 def generate_heatmap(habit_id):
@@ -21,6 +26,7 @@ def generate_heatmap(habit_id):
     
     today = datetime.date.today()
     year_start = datetime.date(today.year, 1, 1)
+    #print(datetime.timezone())
     today_str = today.isoformat()
     
     logs = db.execute("select date, done from habit_logs where habit_id = ?", (habit_id,)).fetchall()
@@ -54,3 +60,20 @@ def generate_heatmap(habit_id):
             week = []
     
     return heatmap
+
+def get_streak(habit_id):
+    db = get_db()
+    today = datetime.date.today()
+    
+    logs = db.execute("select date, done from habit_logs where habit_id = ? order by date desc", (habit_id,)).fetchall()
+    db.close()
+    
+    streak = 0
+    for x in logs:
+        if x["done"] == 1:
+            streak += 1
+        else:
+            if x["done"] == 0:
+                break
+    
+    return streak
