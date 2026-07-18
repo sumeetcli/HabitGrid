@@ -17,6 +17,8 @@ from helpers import login_required, get_db, generate_heatmap, get_streak
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
+app.config["SECRET_KEY"] = "9f7d5b1c3e8a4f6b2d1a7c9e5f8b3d6a0c4e7f1b9a2d5c8e6f3a1b7d9c4e2f8"
+# a random secret key, needed for flash() to work
 Session(app)
 
 @app.route("/")
@@ -109,7 +111,7 @@ def log_habit():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    session.clear()
+    #session.clear()
     if request.method == "GET":
         return render_template("register.html")
 
@@ -142,11 +144,13 @@ def register():
     db.commit()
     db.close()
 
+    session.clear()
+    
     return redirect("/login")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    session.clear()
+    #session.clear()
     if request.method != "POST":
         return render_template("login.html")
     
@@ -154,6 +158,7 @@ def login():
     password = request.form.get("password")
 
     if not username or not password:
+        #print("flashing")
         flash("Username or password cannot be empty")
         return redirect("/login")
 
@@ -162,6 +167,7 @@ def login():
     db.close()
 
     if not tableRow:
+        #print("flashing invalid")
         flash("Invalid username & password")
         return redirect("/login")
 
@@ -169,6 +175,7 @@ def login():
         flash("Invalid username & password")
         return redirect("/login")
 
+    session.clear()
     session["user_id"] = tableRow["id"]
     return redirect("/")
 
@@ -176,6 +183,12 @@ def login():
 def logout():
     session.clear()
 
+    return redirect("/login")
+
+
+@app.route("/flash-test")
+def flash_test():
+    flash("It works!")
     return redirect("/login")
 
 if __name__ == "__main__": # so that any import of this python file doesnt start the server
