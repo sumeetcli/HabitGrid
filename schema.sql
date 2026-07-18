@@ -7,8 +7,7 @@ create table if not exists users (
 create table if not exists habits (
     id integer primary key,
     user_id integer not null,
-    name text not null,
-    created_at text not null
+    name text not null
 );
 
 create table if not exists habit_logs (
