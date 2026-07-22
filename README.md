@@ -1,6 +1,6 @@
 # HabitGrid
 
-#### Video Demo: <https://www.youtube.com/watch?v=HuQLqU34nb8>
+#### Video Demo: <URL>
 
 #### Description:
 
