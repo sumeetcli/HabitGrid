@@ -13,6 +13,7 @@ from helpers import login_required, get_db, generate_heatmap, get_streak
 # 1. freecodecamp flask crash course
 # 2. kevin powell css youtube tutorials
 # 3. Coding2GO css youtube tutorials
+# AI citation: Asked AI about how to structure a minimal Flask habit tracker project and session handling.
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False

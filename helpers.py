@@ -59,6 +59,7 @@ def generate_heatmap(habit_id):
             heatmap.append(week)
             week = []
     
+    # AI citation: Asked AI about building a custom heatmap layout using datetime.timedelta and grouping into weeks.
     return heatmap
 
 def get_streak(habit_id):
@@ -75,5 +76,6 @@ def get_streak(habit_id):
         else:
             if x["done"] == 0:
                 break
-    
+
+    # AI citation: Asked AI about logic for counting consecutive streaks in habit tracking.
     return streak

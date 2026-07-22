@@ -1,3 +1,5 @@
+/* color pallete and font suggestions by AI, adjusted manually */
+
 body {
     background-color: white;
     color: black;
@@ -7,6 +9,7 @@ body {
     font-family: "Balsamiq Sans", cursive; /* funky font: https://fonts.google.com/specimen/Balsamiq+Sans */
 }
 
+/* AI citation: Asked AI for minimal dark mode color scheme ideas */
 body.dark {
     background-color: #121212;
     color: #e0e0e0;
@@ -104,6 +107,7 @@ body.dark .day.today {
 }
 
 /* css grouping trick */
+/* AI citation: Asked AI about reducing repetition in CSS using grouping selectors */
 .day.month-1,
 .day.month-3,
 .day.month-5,
@@ -182,3 +186,4 @@ body.dark input {
 nav a {
     color: black;
 }
+

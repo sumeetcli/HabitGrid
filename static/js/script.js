@@ -5,6 +5,7 @@ const htmlBody = document.body;
 
 // javascript local storage feature
 // escape from writing many SQL queries
+// AI citation: Asked AI about how to store theme preference in browser localStorage instead of database
 if (localStorage.getItem("isDarkMode") === "true") {
     htmlBody.classList.add("dark");
     //console.log(localStorage.getItem("isDarkMode") != "false")
@@ -12,6 +13,7 @@ if (localStorage.getItem("isDarkMode") === "true") {
 }
 
 // toggle dark mode when user clicks button
+// AI citation: Asked AI about building a simple dark mode toggle.
 themeButton.addEventListener("click", function() {
     htmlBody.classList.toggle("dark");
     
@@ -33,6 +35,7 @@ document.addEventListener("click", function(event) {
 
         event.target.classList.toggle("done");
 
+        // AI citation: Asked AI about how to add a quick scale animation for click feedback
         event.target.animate([
             { transform: "scale(1)" },
             { transform: "scale(1.2)" },
